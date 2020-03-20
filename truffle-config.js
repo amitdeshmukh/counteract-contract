@@ -32,7 +32,8 @@ module.exports = {
 
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
-  contracts_build_directory: path.join(__dirname, "build/contracts"),
+  // contracts_build_directory: path.join(__dirname, "build/contracts"),
+  contracts_build_directory: "/builds/superblocks/superblocks-ci-production/counteract-contract/build/contracts",
   networks: {
     develop: {
       port: 8545
