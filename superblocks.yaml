@@ -28,6 +28,6 @@ stages:
       jobs:
         - deploy_to_rinkeby
             when: manual
-            filters:
-              only:
-                - master
+            # filters:
+            #   only:
+            #     - master
