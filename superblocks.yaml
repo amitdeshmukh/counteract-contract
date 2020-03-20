@@ -27,7 +27,7 @@ stages:
   - deploy_to_testnet:
       jobs:
         - deploy_to_rinkeby
-            when: manual
-                filters:
-                  only: 
-                    - master
+          when: manual
+            filters:
+              only: 
+                - master
