@@ -14,10 +14,10 @@ jobs:
     image: node
     type:
       name: ethereum/deploy
-      script:
-        - npm install
-        - npx truffle migrate --network rinkeby_metamask --reset
-        - npx superblocks-cli collect-artifacts
+    script:
+      - npm install
+      - npx truffle migrate --network rinkeby_metamask --reset
+      - npx superblocks-cli collect-artifacts
 
 stages:
   - build_and_test:
