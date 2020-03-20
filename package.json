@@ -1,0 +1,16 @@
+{
+    "name": "counteract-superblocks-project",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "build": "truffle compile",
+        "test": "truffle test"
+    },
+    "devDependencies": {
+        "truffle": "^5.0.35"
+    },
+    "dependencies": {
+        "@truffle/hdwallet-provider": "^1.0.17",
+        "super-web3-provider": "0.0.19"
+    }
+}

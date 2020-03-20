@@ -10,7 +10,24 @@ jobs:
     script:
       - npm install truffle
       - npx truffle test
+  deploy_to_rinkeby:
+    image: node
+    type:
+      name: ethereum/deploy
+      script:
+        - npm install
+        - npx truffle migrate --network rinkeby_metamask --reset
+        - npx superblocks-cli collect-artifacts
+
 stages:
-  - pipeline:
+  - build_and_test:
       jobs:
         - compile
+        # - test
+  - deploy_to_testnet:
+      jobs:
+        - deploy_to_rinkeby
+            when: manual
+                filters:
+                  only: 
+                    - master

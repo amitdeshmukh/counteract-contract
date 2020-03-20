@@ -1,99 +1,94 @@
+const path = require("path");
+const { SuperHDWalletProvider, ManualSignProvider } = require("super-web3-provider");
+
+// IMPORTANT: We need to globally store these providers here due to the fact that Truffle decides to call
+// the provider() function multiple times during a deployment, therefore we would be re-creating
+// a deployment on every call. 
+let rinkebyProvider;
+let rinkebyMetamaskProvider;
+let mainnetProvider;
+
 /**
- * Use this file to configure your truffle project. It's seeded with some
- * common settings for different networks and features like migrations,
- * compilation and testing. Uncomment the ones you need or modify
- * them to suit your project as necessary.
- *
- * More information about configuration can be found at:
- *
- * truffleframework.com/docs/advanced/configuration
- *
- * To deploy via Infura you'll need a wallet provider (like @truffle/hdwallet-provider)
- * to sign your transactions before they're sent to a remote public node. Infura accounts
- * are available for free at: infura.io/register.
- *
- * You'll also need a mnemonic - the twelve word phrase the wallet uses to generate
- * public/private key pairs. If you're publishing your code to GitHub make sure you load this
- * phrase from a file you've .gitignored so it doesn't accidentally become public.
- *
+ * PRO TIP: If you want to run all this inside your terminal to try things out, simply assign the variables 
+ * here and good to go. We do recommend though to put all this as ENV variables when running in a CI, so
+ * you never actually commit this values into your repository
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-// const infuraKey = "fj4jll3k.....";
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+// Make sure to login into Superblocks, and create a new deployment space in a project. You can find 
+// the deployment space id inside the space settings by clicking the gear icon next to the name
+const projectId = '5e7435895c27530018e59fcb';
+
+// You need to create a new token in order to authenticate against the service. Login into the dashboard,
+// select the project you want to deploy into, and in the project settings you will find a Project Token 
+// section. 
+const token = 'AGDsxq8daWyVvComR49vU29GF7aQP0WV9ODiciCEzuZiros0dAIE1AAf';
+
+// Simply your 12 seeds word associated with your wallet. This is used only for the SuperHDWallet provider
+// so you can sign the txs client side, but still keep track fo the deployment within Superblocks.
+const mnemonic = process.env.MNEMONIC;
 
 module.exports = {
-  /**
-   * Networks define how you connect to your ethereum client and let you set the
-   * defaults web3 uses to send transactions. If you don't specify one truffle
-   * will spin up a development blockchain for you on port 9545 when you
-   * run `develop` or `test`. You can ask a truffle command to use a specific
-   * network from the command line, e.g
-   *
-   * $ truffle test --network <network-name>
-   */
+  plugins: ["truffle-security"],
 
+  // See <http://truffleframework.com/docs/advanced/configuration>
+  // to customize your Truffle configuration!
+  // contracts_build_directory: path.join(__dirname, "client/src/contracts"),
   networks: {
-    // Useful for testing. The `development` name is special - truffle uses it by default
-    // if it's defined here and no other network is specified at the command line.
-    // You should run a client (like ganache-cli, geth or parity) in a separate terminal
-    // tab if you use this network and you must also set the `host`, `port` and `network_id`
-    // options below to some value.
-    //
-    // development: {
-    //  host: "127.0.0.1",     // Localhost (default: none)
-    //  port: 8545,            // Standard Ethereum port (default: none)
-    //  network_id: "*",       // Any network (default: none)
-    // },
+    develop: {
+      port: 8545
+    },
 
-    // Another network with more advanced options...
-    // advanced: {
-      // port: 8777,             // Custom port
-      // network_id: 1342,       // Custom network
-      // gas: 8500000,           // Gas sent with each transaction (default: ~6700000)
-      // gasPrice: 20000000000,  // 20 gwei (in wei) (default: 100 gwei)
-      // from: <address>,        // Account to send txs from (default: accounts[0])
-      // websockets: true        // Enable EventEmitter interface for web3 (default: false)
-    // },
+    // !! Check note below regarding provider before using !!
+    rinkeby: {
+      provider: () => {
+        // Let's not double create the provider (as we will create many deployments) as Truffle calls this function many times (◔_◔)
+        if (!rinkebyProvider) {
+          rinkebyProvider = new SuperHDWalletProvider({
+            projectId,
+            token,
+            mnemonic,
+            networkId: '4',
+            // NOTE: `provider` here should probably be `endpoint` ???
+            provider: "https://rinkeby.infura.io/v3/14a9bebf5c374938b2476abe29ca5564"
+          });
+        }
+        return rinkebyProvider;
+      },
+      network_id: '4'
+    },
 
-    // Useful for deploying to a public network.
-    // NB: It's important to wrap the provider as a function.
-    // ropsten: {
-      // provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/YOUR-PROJECT-ID`),
-      // network_id: 3,       // Ropsten's id
-      // gas: 5500000,        // Ropsten has a lower block limit than mainnet
-      // confirmations: 2,    // # of confs to wait between deployments. (default: 0)
-      // timeoutBlocks: 200,  // # of blocks before a deployment times out  (minimum/default: 50)
-      // skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
-    // },
+    rinkeby_metamask: {
+      provider: () => {
+        // Let's not double create the provider (as we will create many deployments) as Truffle calls this function many times (◔_◔)
+        if (!rinkebyMetamaskProvider) {
+          rinkebyMetamaskProvider = new ManualSignProvider({ 
+            projectId,
+            token,
+            from: '0xB2665a1B8F91814E462F8E04A57738063aDEC032',
+            endpoint: 'https://rinkeby.infura.io/v3/fe1718d91c7341d08bb36d917f9de5e9',
+            networkId: '4',
+          })
+        }
+        return rinkebyMetamaskProvider;
+      },
+      network_id: '4'
+    },
 
-    // Useful for private networks
-    // private: {
-      // provider: () => new HDWalletProvider(mnemonic, `https://network.io`),
-      // network_id: 2111,   // This network is yours, in the cloud.
-      // production: true    // Treats this network as if it was a public net. (default: false)
-    // }
-  },
-
-  // Set default mocha options here, use special reporters etc.
-  mocha: {
-    // timeout: 100000
-  },
-
-  // Configure your compilers
-  compilers: {
-    solc: {
-      // version: "0.5.1",    // Fetch exact version from solc-bin (default: truffle's version)
-      // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-      // settings: {          // See the solidity docs for advice about optimization and evmVersion
-      //  optimizer: {
-      //    enabled: false,
-      //    runs: 200
-      //  },
-      //  evmVersion: "byzantium"
-      // }
+    mainnet: {
+      provider: () => {
+        // Let's not double create the provider (as we will create many deployments) as Truffle calls this function many times (◔_◔)
+        if (!mainnetProvider) {
+          mainnetProvider = new ManualSignProvider({ 
+            projectId,
+            token,
+            from: '0xB2665a1B8F91814E462F8E04A57738063aDEC032', 
+            endpoint: 'https://rinkeby.infura.io/v3/fe1718d91c7341d08bb36d917f9de5e9',
+            networkId: '1',
+          })
+        }
+        return mainnetProvider;
+      },
+      network_id: '1'
     }
   }
-}
+};
