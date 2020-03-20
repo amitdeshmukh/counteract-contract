@@ -7,7 +7,7 @@ contract CounterAct {
     event Decrease(uint256 value, uint256 amount);
 
     function increase(uint256 amount) public {
-      value += amount;
+      value += 100;
       emit Increase(value, amount);
     }
 
