@@ -1,5 +1,5 @@
 // contracts/CounterAct.sol
-pragma solidity 0.6.1;
+pragma solidity 0.5.16;
 
 contract CounterAct {
     uint256 public value;
