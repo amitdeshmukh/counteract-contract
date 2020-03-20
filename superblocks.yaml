@@ -10,7 +10,7 @@ jobs:
     script:
       - npm install truffle
       - npx truffle test
-  deploy_to_rinkeby:
+  deploy_to_rinkeby_manually:
     image: node
     type:
       name: ethereum/deploy
@@ -24,10 +24,10 @@ stages:
       jobs:
         - compile
         # - test
-  - deploy_to_testnet:
-      jobs:
-        - deploy_to_rinkeby
-            when: manual
-            # filters:
-            #   only:
-            #     - master
+  - deploy_to_testnets:
+    jobs:
+      - deploy_to_rinkeby_manually:
+          when: manual
+          filters:
+            only: 
+              - master
