@@ -29,5 +29,5 @@ stages:
         - deploy_to_rinkeby
             when: manual
             filters:
-              only: 
+              only:
                 - master
