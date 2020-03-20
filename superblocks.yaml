@@ -26,7 +26,7 @@ stages:
         # - test
   - deploy_to_testnets:
     jobs:
-      - deploy_to_rinkeby_manually:
+      - deploy_to_rinkeby_manually
           when: manual
           filters:
             only: 
